@@ -2,16 +2,26 @@ import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics } from 'firebase/analytics';
+import {
+  FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET,
+  FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_APP_ID,
+  FIREBASE_MEASUREMENT_ID,
+  ENABLE_ANALYTICS
+} from '@env';
 
-// Your web app's Firebase configuration
+// Firebase configuration from environment variables
 const firebaseConfig = {
-  apiKey: "AIzaSyAMnE-pi8jrE0o_OsrduYrrw0kl8kFpUsk",
-  authDomain: "general-study-forum.firebaseapp.com",
-  projectId: "general-study-forum",
-  storageBucket: "general-study-forum.firebasestorage.app",
-  messagingSenderId: "610185294530",
-  appId: "1:610185294530:web:32c8b3e9802e9bca2ac15b",
-  measurementId: "G-MSF089BDHY"
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+  appId: FIREBASE_APP_ID,
+  measurementId: FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
@@ -23,9 +33,9 @@ const auth = getAuth(app);
 // Initialize Firestore
 const db = getFirestore(app);
 
-// Initialize Analytics (optional - only works on web)
+// Initialize Analytics (optional - only works on web and when enabled)
 let analytics = null;
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && ENABLE_ANALYTICS === 'true') {
   analytics = getAnalytics(app);
 }
 

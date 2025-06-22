@@ -5,10 +5,15 @@
   "private": true,
   "scripts": {
     "dev": "EXPO_NO_TELEMETRY=1 expo start",
+    "start": "EXPO_NO_TELEMETRY=1 expo start",
     "build:web": "expo export --platform web",
     "lint": "expo lint",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "setup": "./scripts/setup-env.sh",
+    "setup:env": "./scripts/setup-env.sh",
+    "build:apk": "cd android && ./gradlew assembleRelease",
+    "build:apk:universal": "cd android && ./gradlew assembleRelease && cp app/build/outputs/apk/release/app-universal-release.apk ../General-Study-Forum-Universal.apk"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
@@ -38,6 +43,7 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.4",
+    "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
