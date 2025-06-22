@@ -1,15 +1,35 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuthStore } from '@/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import { router } from 'expo-router';
 import { User, Settings, BookOpen, Trophy, Bell, CircleHelp as HelpCircle, LogOut, ChevronRight, Star, Calendar } from 'lucide-react-native';
 
 export default function ProfileScreen() {
-  const { user, logout } = useAuthStore();
+  const { user, userData, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    router.replace('/(auth)/welcome');
+  const handleLogout = async () => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace('/(auth)/welcome');
+            } catch (error: any) {
+              Alert.alert('Error', error.message);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const profileStats = [
@@ -26,17 +46,26 @@ export default function ProfileScreen() {
     { title: 'Logout', icon: LogOut, onPress: handleLogout, isDestructive: true },
   ];
 
+  // Default avatar if user doesn't have one
+  const avatarUri = user?.photoURL || 'https://via.placeholder.com/80x80/3B82F6/FFFFFF?text=' + (user?.displayName?.[0] || user?.email?.[0] || 'U').toUpperCase();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Profile Header */}
         <View style={styles.profileHeader}>
           <Image 
-            source={{ uri: user?.avatar }}
+            source={{ uri: avatarUri }}
             style={styles.avatar}
           />
-          <Text style={styles.userName}>{user?.name}</Text>
+          <Text style={styles.userName}>
+            {user?.displayName || userData?.displayName || 'User'}
+          </Text>
           <Text style={styles.userEmail}>{user?.email}</Text>
+          
+          {userData?.phoneNumber && (
+            <Text style={styles.userPhone}>{userData.phoneNumber}</Text>
+          )}
           
           <TouchableOpacity style={styles.editProfileButton}>
             <Text style={styles.editProfileText}>Edit Profile</Text>
@@ -117,7 +146,7 @@ export default function ProfileScreen() {
 
         {/* App Info */}
         <View style={styles.appInfo}>
-          <Text style={styles.appInfoText}>Khan Global Studies v1.0.0</Text>
+          <Text style={styles.appInfoText}>General Study Forum v1.0.0</Text>
           <Text style={styles.appInfoText}>Made with ❤️ for learners worldwide</Text>
         </View>
       </ScrollView>
@@ -149,6 +178,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   userEmail: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  userPhone: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     color: '#6B7280',

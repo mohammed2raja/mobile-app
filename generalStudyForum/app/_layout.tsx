@@ -10,6 +10,8 @@ import {
   Inter_700Bold
 } from '@expo-google-fonts/inter';
 import * as SplashScreen from 'expo-splash-screen';
+import { useAuth } from '@/hooks/useAuth';
+import { View, Text, ActivityIndicator } from 'react-native';
 
 // Prevent splash screen from auto-hiding
 SplashScreen.preventAutoHideAsync();
@@ -24,6 +26,8 @@ export default function RootLayout() {
     'Inter-Bold': Inter_700Bold,
   });
 
+  const { user, loading } = useAuth();
+
   useEffect(() => {
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync();
@@ -34,14 +38,31 @@ export default function RootLayout() {
     return null;
   }
 
+  // Show loading screen while checking authentication
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#3B82F6' }}>
+        <ActivityIndicator size="large" color="#FFFFFF" />
+        <Text style={{ color: '#FFFFFF', marginTop: 16, fontFamily: 'Inter-Regular' }}>
+          Loading...
+        </Text>
+      </View>
+    );
+  }
+
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
+        {user ? (
+          // User is authenticated - show main app
+          <Stack.Screen name="(tabs)" />
+        ) : (
+          // User is not authenticated - show auth screens
+          <Stack.Screen name="(auth)" />
+        )}
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
-    </>
+    </View>
   );
 }

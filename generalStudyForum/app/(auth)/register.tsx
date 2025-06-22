@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Mail, Lock, User, ArrowLeft, Phone } from 'lucide-react-native';
-import { useAuthStore } from '@/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 
 interface FieldErrors {
   name: string;
@@ -42,7 +42,8 @@ export default function RegisterScreen() {
     password: false,
     confirmPassword: false,
   });
-  const { register, isLoading } = useAuthStore();
+  
+  const { register, loading, error, clearError } = useAuth();
 
   // Validation functions
   const validateEmail = (email: string) => {
@@ -115,6 +116,11 @@ export default function RegisterScreen() {
   };
 
   const handleFieldChange = (field: keyof FieldErrors, value: string) => {
+    // Clear any Firebase errors when user starts typing
+    if (error) {
+      clearError();
+    }
+
     // Update the field value
     switch (field) {
       case 'name':
@@ -226,10 +232,10 @@ export default function RegisterScreen() {
     }
 
     try {
-      await register(email, password, name);
+      await register(email, password, name, phoneNumber || undefined);
       router.replace('/(tabs)');
-    } catch (error) {
-      Alert.alert('Error', 'Registration failed');
+    } catch (error: any) {
+      Alert.alert('Registration Failed', error.message);
     }
   };
 
@@ -347,13 +353,18 @@ export default function RegisterScreen() {
             <Text style={styles.errorText}>{errors.confirmPassword}</Text>
           )}
 
+          {/* Firebase error display */}
+          {error && (
+            <Text style={styles.firebaseErrorText}>{error}</Text>
+          )}
+
           <TouchableOpacity 
-            style={[styles.registerButton, isLoading && styles.disabledButton]}
+            style={[styles.registerButton, loading && styles.disabledButton]}
             onPress={handleRegister}
-            disabled={isLoading}
+            disabled={loading}
           >
             <Text style={styles.registerButtonText}>
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {loading ? 'Creating Account...' : 'Create Account'}
             </Text>
           </TouchableOpacity>
 
@@ -458,5 +469,13 @@ const styles = StyleSheet.create({
     marginTop: -12,
     marginBottom: 8,
     marginLeft: 4,
+  },
+  firebaseErrorText: {
+    color: '#EF4444',
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    textAlign: 'center',
+    marginBottom: 16,
+    paddingHorizontal: 16,
   },
 });
