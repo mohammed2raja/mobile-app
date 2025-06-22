@@ -62,13 +62,13 @@ For additional security, you can move Firebase config to environment variables:
 2. Add your Firebase config:
 
 ```env
-FIREBASE_API_KEY=AIzaSyAMnE-pi8jrE0o_OsrduYrrw0kl8kFpUsk
+FIREBASE_API_KEY=...
 FIREBASE_AUTH_DOMAIN=general-study-forum.firebaseapp.com
 FIREBASE_PROJECT_ID=general-study-forum
 FIREBASE_STORAGE_BUCKET=general-study-forum.firebasestorage.app
-FIREBASE_MESSAGING_SENDER_ID=610185294530
-FIREBASE_APP_ID=1:610185294530:web:32c8b3e9802e9bca2ac15b
-FIREBASE_MEASUREMENT_ID=G-MSF089BDHY
+FIREBASE_MESSAGING_SENDER_ID=...
+FIREBASE_APP_ID=....
+FIREBASE_MEASUREMENT_ID=...
 ```
 
 3. Update `config/firebase.ts` to use environment variables:
